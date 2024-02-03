@@ -14,6 +14,7 @@ app.get('/posts', async (_, res) => {
     const result = await readPosts()
     res.status(200).json(result)
   } catch (error) {
+    console.error('Error en la ruta /get:', error)
     res.status(500).json({ error: 'Error en la base de datos', details: error.message })
   }
 })
@@ -26,7 +27,7 @@ app.post('/posts', async (req, res) => {
     const result = await createPosts(req.body)
     return res.status(201).json(result)
   } catch (error) {
-    console.error('Error en la ruta /posts:', error)
+    console.error('Error en la ruta /post:', error)
     return res.status(500).json({ error: 'Error en la base de datos', details: error.message })
   }
 })
@@ -37,6 +38,7 @@ app.put('/posts/like/:id', async (req, res) => {
     const result = await updatePost(id)
     return res.status(200).json(result)
   } catch (error) {
+    console.error('Error en la ruta /put:', error)
     return res.status(500).json({ error: 'Error en la base de datos', details: error.message })
   }
 })
@@ -47,6 +49,7 @@ app.delete('/posts/:id', async (req, res) => {
     const result = await deletePost(id)
     return res.status(200).json(result)
   } catch (error) {
+    console.error('Error en la ruta /delete:', error)
     return res.status(500).json({ error: 'Error en la base de datos', details: error.message })
   }
 })
