@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
-const { createPosts, readPosts } = require('../utils/pg')
+const { createPosts, readPosts, updatePost, deletePost } = require('../utils/pg')
 
 const PORT = process.env.PORT ?? 3000
 const app = express()
@@ -14,16 +14,40 @@ app.get('/posts', async (_, res) => {
     const result = await readPosts()
     res.status(200).json(result)
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json({ error: 'Error en la base de datos', details: error.message })
   }
 })
 
 app.post('/posts', async (req, res) => {
   try {
+    if (!req.body.id || !req.body.titulo || !req.body.url || !req.body.descripcion) {
+      return res.status(400).json({ error: 'Faltan datos obligatorios para crear el post.' })
+    }
     const result = await createPosts(req.body)
-    res.status(201).json(result)
+    return res.status(201).json(result)
   } catch (error) {
-    res.status(500).json(error)
+    console.error('Error en la ruta /posts:', error)
+    return res.status(500).json({ error: 'Error en la base de datos', details: error.message })
+  }
+})
+
+app.put('/posts/like/:id', async (req, res) => {
+  const { id } = req.params
+  try {
+    const result = await updatePost(id)
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ error: 'Error en la base de datos', details: error.message })
+  }
+})
+
+app.delete('/posts/:id', async (req, res) => {
+  const { id } = req.params
+  try {
+    const result = await deletePost(id)
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ error: 'Error en la base de datos', details: error.message })
   }
 })
 
